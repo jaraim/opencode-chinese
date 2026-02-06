@@ -143,12 +143,12 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
                           {key}{" "}
                           <span style={{ fg: theme.textMuted }}>
                             <Switch fallback={item.status}>
-                              <Match when={item.status === "connected"}>Connected</Match>
+                              <Match when={item.status === "connected"}>已连接</Match>
                               <Match when={item.status === "failed" && item}>{(val) => <i>{val().error}</i>}</Match>
-                              <Match when={item.status === "disabled"}>Disabled</Match>
-                              <Match when={(item.status as string) === "needs_auth"}>Needs auth</Match>
+                              <Match when={item.status === "disabled"}>已禁用</Match>
+                              <Match when={(item.status as string) === "needs_auth"}>需要认证</Match>
                               <Match when={(item.status as string) === "needs_client_registration"}>
-                                Needs client ID
+                                需要客户端 ID
                               </Match>
                             </Switch>
                           </span>

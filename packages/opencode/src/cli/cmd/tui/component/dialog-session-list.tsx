@@ -65,7 +65,7 @@ export function DialogSessionList() {
 
   return (
     <DialogSelect
-      title="Sessions"
+      title="会话"
       options={options()}
       skipFilter={true}
       current={currentSessionID()}

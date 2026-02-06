@@ -44,7 +44,7 @@ export function Home() {
 
   command.register(() => [
     {
-      title: tipsHidden() ? "Show tips" : "Hide tips",
+      title: tipsHidden() ? "显示提示" : "隐藏提示",
       value: "tips.toggle",
       keybind: "tips_toggle",
       category: "System",

@@ -43,11 +43,13 @@ export const dict = {
   "command.language.set": "Use language: {{language}}",
 
   "command.session.new": "New session",
+  "command.session.new.description": "Create a new session",
   "command.file.open": "Open file",
   "command.tab.close": "Close tab",
   "command.context.addSelection": "Add selection to context",
   "command.context.addSelection.description": "Add selected lines from the current file",
   "command.terminal.toggle": "Toggle terminal",
+  "command.terminal.toggle.description": "Show or hide terminal",
   "command.fileTree.toggle": "Toggle file tree",
   "command.review.toggle": "Toggle review",
   "command.terminal.new": "New terminal",

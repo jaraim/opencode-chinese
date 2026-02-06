@@ -201,7 +201,7 @@ export function DialogModel(props: { providerID?: string }) {
 
   const title = createMemo(() => {
     if (provider()) return provider()!.name
-    return "Select model"
+    return "选择模型"
   })
 
   return (
@@ -209,14 +209,14 @@ export function DialogModel(props: { providerID?: string }) {
       keybind={[
         {
           keybind: keybind.all.model_provider_list?.[0],
-          title: connected() ? "Connect provider" : "View all providers",
+          title: connected() ? "连接提供商" : "查看所有提供商",
           onTrigger() {
             dialog.replace(() => <DialogProvider />)
           },
         },
         {
           keybind: keybind.all.model_favorite_toggle?.[0],
-          title: "Favorite",
+          title: "收藏",
           disabled: !connected(),
           onTrigger: (option) => {
             local.model.toggleFavorite(option.value as { providerID: string; modelID: string })

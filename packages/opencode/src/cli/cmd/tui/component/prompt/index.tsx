@@ -53,7 +53,7 @@ export type PromptRef = {
   submit(): void
 }
 
-const PLACEHOLDERS = ["Fix a TODO in the codebase", "What is the tech stack of this project?", "Fix broken tests"]
+const PLACEHOLDERS = ["修复代码库中的 TODO", "这个项目的技术栈是什么？", "修复损坏的测试"]
 
 export function Prompt(props: PromptProps) {
   let input: TextareaRenderable
@@ -78,7 +78,7 @@ export function Prompt(props: PromptProps) {
   function promptModelWarning() {
     toast.show({
       variant: "warning",
-      message: "Connect a provider to send prompts",
+      message: "连接提供商以发送提示",
       duration: 3000,
     })
     if (sync.data.provider.length === 0) {
@@ -158,7 +158,7 @@ export function Prompt(props: PromptProps) {
   command.register(() => {
     return [
       {
-        title: "Clear prompt",
+        title: "清除提示",
         value: "prompt.clear",
         category: "Prompt",
         hidden: true,
@@ -169,7 +169,7 @@ export function Prompt(props: PromptProps) {
         },
       },
       {
-        title: "Submit prompt",
+        title: "提交提示",
         value: "prompt.submit",
         keybind: "input_submit",
         category: "Prompt",
@@ -181,7 +181,7 @@ export function Prompt(props: PromptProps) {
         },
       },
       {
-        title: "Paste",
+        title: "粘贴",
         value: "prompt.paste",
         keybind: "input_paste",
         category: "Prompt",
@@ -198,7 +198,7 @@ export function Prompt(props: PromptProps) {
         },
       },
       {
-        title: "Interrupt session",
+        title: "中断会话",
         value: "session.interrupt",
         keybind: "session_interrupt",
         category: "Session",
@@ -230,7 +230,7 @@ export function Prompt(props: PromptProps) {
         },
       },
       {
-        title: "Open editor",
+        title: "打开编辑器",
         category: "Session",
         keybind: "editor_open",
         value: "prompt.editor",
@@ -317,7 +317,7 @@ export function Prompt(props: PromptProps) {
         },
       },
       {
-        title: "Skills",
+        title: "技能",
         value: "prompt.skills",
         category: "Prompt",
         slash: {
@@ -459,7 +459,7 @@ export function Prompt(props: PromptProps) {
 
   command.register(() => [
     {
-      title: "Stash prompt",
+      title: "暂存提示",
       value: "prompt.stash",
       category: "Prompt",
       enabled: !!store.prompt.input,
@@ -477,7 +477,7 @@ export function Prompt(props: PromptProps) {
       },
     },
     {
-      title: "Stash pop",
+      title: "弹出暂存",
       value: "prompt.stash.pop",
       category: "Prompt",
       enabled: stash.list().length > 0,
@@ -493,7 +493,7 @@ export function Prompt(props: PromptProps) {
       },
     },
     {
-      title: "Stash list",
+      title: "暂存列表",
       value: "prompt.stash.list",
       category: "Prompt",
       enabled: stash.list().length > 0,
@@ -1079,7 +1079,7 @@ export function Prompt(props: PromptProps) {
                       const baseMessage = message()
                       const truncatedHint = isTruncated() ? " (click to expand)" : ""
                       const duration = formatDuration(seconds())
-                      const retryInfo = ` [retrying ${duration ? `in ${duration} ` : ""}attempt #${r.attempt}]`
+                      const retryInfo = ` [${duration ? `${duration}后` : ""}重试 第${r.attempt}次]`
                       return baseMessage + truncatedHint + retryInfo
                     }
 
@@ -1111,15 +1111,15 @@ export function Prompt(props: PromptProps) {
                     </text>
                   </Show>
                   <text fg={theme.text}>
-                    {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>agents</span>
+                    {keybind.print("agent_cycle")} <span style={{ fg: theme.textMuted }}>智能体</span>
                   </text>
                   <text fg={theme.text}>
-                    {keybind.print("command_list")} <span style={{ fg: theme.textMuted }}>commands</span>
+                    {keybind.print("command_list")} <span style={{ fg: theme.textMuted }}>命令</span>
                   </text>
                 </Match>
                 <Match when={store.mode === "shell"}>
                   <text fg={theme.text}>
-                    esc <span style={{ fg: theme.textMuted }}>exit shell mode</span>
+                    esc <span style={{ fg: theme.textMuted }}>退出 shell 模式</span>
                   </text>
                 </Match>
               </Switch>

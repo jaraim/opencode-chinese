@@ -8,6 +8,22 @@
   </a>
 </p>
 <p align="center">The open source AI coding agent.</p>
+<p align="center"><strong>中文汉化版 (Community Chinese Localization)</strong></p>
+
+> ⚠️ **免责声明 / Disclaimer**
+>
+> 这是 OpenCode 的社区中文汉化版本，由社区爱好者维护，**非官方版本**。
+>
+> - 原项目版权归 [Anomaly Labs](https://github.com/anomalyco) 所有
+> - 汉化内容仅供学习和个人使用
+> - 如有侵权，请联系删除
+>
+> This is a community Chinese localization of OpenCode, maintained by community enthusiasts. **Not an official release.**
+>
+> - Original project copyright belongs to [Anomaly Labs](https://github.com/anomalyco)
+> - Localized content is for learning and personal use only
+> - Please contact us for removal if there is any infringement
+
 <p align="center">
   <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
   <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
@@ -115,6 +131,45 @@ For more info on how to configure OpenCode, [**head over to our docs**](https://
 
 If you're interested in contributing to OpenCode, please read our [contributing docs](./CONTRIBUTING.md) before submitting a pull request.
 
+### Building Locally
+
+To build OpenCode from source:
+
+```bash
+# Clone the repository
+git clone https://github.com/anomalyco/opencode.git
+cd opencode
+
+# Install dependencies
+bun install
+
+# Build CLI tool
+cd packages/opencode
+bun run build --single
+
+# Build Desktop App (requires Rust)
+cd packages/desktop
+bun run tauri build
+```
+
+Output files:
+
+- CLI: `packages/opencode/dist/opencode-<platform>-<arch>/bin/opencode`
+- Desktop: `packages/desktop/src-tauri/target/release/bundle/`
+
+### 中文汉化版构建 / Chinese Localization Build
+
+此版本包含完整的中文界面汉化，包括：
+
+- ✅ 所有命令和菜单项
+- ✅ 提示信息和对话框
+- ✅ 配置文件描述
+- ✅ 智能体描述
+
+汉化内容包括：`packages/opencode/src/cli/cmd/tui/`、`packages/app/src/i18n/`、`packages/opencode/src/agent/` 等文件
+
+**注意**：汉化仅供个人学习使用，请勿用于商业用途。
+
 ### Building on OpenCode
 
 If you are working on a project that's related to OpenCode and is using "opencode" as part of its name, for example "opencode-dashboard" or "opencode-mobile", please add a note to your README to clarify that it is not built by the OpenCode team and is not affiliated with us in any way.
@@ -134,3 +189,12 @@ It's very similar to Claude Code in terms of capability. Here are the key differ
 ---
 
 **Join our community** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+
+---
+
+### License & Attribution
+
+- **Original Project**: [OpenCode](https://github.com/anomalyco/opencode) by [Anomaly Labs](https://github.com/anomalyco)
+- **License**: MIT License (see [LICENSE](./LICENSE))
+- **中文汉化版**: Community localization for educational purposes
+- **Disclaimer**: This is an unofficial community project. All trademarks and original code belong to their respective owners.

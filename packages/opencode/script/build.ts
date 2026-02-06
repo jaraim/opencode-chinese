@@ -150,12 +150,12 @@ for (const item of targets) {
       autoloadPackageJson: true,
       target: name.replace(pkg.name, "bun") as any,
       outfile: `dist/${name}/bin/opencode`,
-      execArgv: [`--user-agent=opencode/${Script.version}`, "--use-system-ca", "--"],
+      execArgv: [`--user-agent=opencode/${pkg.version}`, "--use-system-ca", "--"],
       windows: {},
     },
     entrypoints: ["./src/index.ts", parserWorker, workerPath],
     define: {
-      OPENCODE_VERSION: `'${Script.version}'`,
+      OPENCODE_VERSION: `'${pkg.version}',`,
       OTUI_TREE_SITTER_WORKER_PATH: bunfsRoot + workerRelativePath,
       OPENCODE_WORKER_PATH: workerPath,
       OPENCODE_CHANNEL: `'${Script.channel}'`,
@@ -168,7 +168,7 @@ for (const item of targets) {
     JSON.stringify(
       {
         name,
-        version: Script.version,
+        version: pkg.version,
         os: [item.os],
         cpu: [item.arch],
       },
@@ -176,7 +176,7 @@ for (const item of targets) {
       2,
     ),
   )
-  binaries[name] = Script.version
+  binaries[name] = pkg.version
 }
 
 if (Script.release) {

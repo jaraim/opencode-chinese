@@ -143,15 +143,15 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
     <Switch>
       <Match when={store.stage === "always"}>
         <Prompt
-          title="Always allow"
+          title="始终允许"
           body={
             <Switch>
               <Match when={props.request.always.length === 1 && props.request.always[0] === "*"}>
-                <TextBody title={"This will allow " + props.request.permission + " until OpenCode is restarted."} />
+                <TextBody title={"这将允许 " + props.request.permission + " 直到 OpenCode 重启。"} />
               </Match>
               <Match when={true}>
                 <box paddingLeft={1} gap={1}>
-                  <text fg={theme.textMuted}>This will allow the following patterns until OpenCode is restarted</text>
+                  <text fg={theme.textMuted}>以下模式将被允许，直到 OpenCode 重启</text>
                   <box>
                     <For each={props.request.always}>
                       {(pattern) => (
@@ -196,17 +196,17 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
         {(() => {
           const body = (
             <Prompt
-              title="Permission required"
+              title="需要权限"
               body={
                 <Switch>
                   <Match when={props.request.permission === "edit"}>
                     <EditBody request={props.request} />
                   </Match>
                   <Match when={props.request.permission === "read"}>
-                    <TextBody icon="→" title={`Read ` + normalizePath(input().filePath as string)} />
+                    <TextBody icon="→" title={`读取 ` + normalizePath(input().filePath as string)} />
                   </Match>
                   <Match when={props.request.permission === "glob"}>
-                    <TextBody icon="✱" title={`Glob "` + (input().pattern ?? "") + `"`} />
+                    <TextBody icon="✱" title={`全局模式 "` + (input().pattern ?? "") + `"`} />
                   </Match>
                   <Match when={props.request.permission === "grep"}>
                     <TextBody icon="✱" title={`Grep "` + (input().pattern ?? "") + `"`} />
@@ -253,18 +253,18 @@ export function PermissionPrompt(props: { request: PermissionRequest }) {
                       const raw = parent ?? filepath ?? derived
                       const dir = normalizePath(raw)
 
-                      return <TextBody icon="←" title={`Access external directory ` + dir} />
+                      return <TextBody icon="←" title={`访问外部目录 ` + dir} />
                     })()}
                   </Match>
                   <Match when={props.request.permission === "doom_loop"}>
-                    <TextBody icon="⟳" title="Continue after repeated failures" />
+                    <TextBody icon="⟳" title="重复失败后继续" />
                   </Match>
                   <Match when={true}>
-                    <TextBody icon="⚙" title={`Call tool ` + props.request.permission} />
+                    <TextBody icon="⚙" title={`调用工具 ` + props.request.permission} />
                   </Match>
                 </Switch>
               }
-              options={{ once: "Allow once", always: "Allow always", reject: "Reject" }}
+              options={{ once: "允许一次", always: "始终允许", reject: "拒绝" }}
               escapeKey="reject"
               fullscreen
               onSelect={(option) => {
@@ -331,10 +331,10 @@ function RejectPrompt(props: { onConfirm: (message: string) => void; onCancel: (
       <box gap={1} paddingLeft={1} paddingRight={3} paddingTop={1} paddingBottom={1}>
         <box flexDirection="row" gap={1} paddingLeft={1}>
           <text fg={theme.error}>{"△"}</text>
-          <text fg={theme.text}>Reject permission</text>
+          <text fg={theme.text}>拒绝权限</text>
         </box>
         <box paddingLeft={1}>
-          <text fg={theme.textMuted}>Tell OpenCode what to do differently</text>
+          <text fg={theme.textMuted}>告诉 OpenCode 应该如何做</text>
         </box>
       </box>
       <box

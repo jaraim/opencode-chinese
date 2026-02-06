@@ -1,5 +1,5 @@
 ---
-description: ALWAYS use this when writing docs
+description: 文档
 color: "#38A3EE"
 ---
 

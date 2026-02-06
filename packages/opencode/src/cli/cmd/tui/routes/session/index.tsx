@@ -183,7 +183,7 @@ export function Session() {
       .catch((e) => {
         console.error(e)
         toast.show({
-          message: `Session not found: ${route.sessionID}`,
+          message: `未找到会话: ${route.sessionID}`,
           variant: "error",
         })
         return navigate({ type: "home" })
@@ -314,7 +314,7 @@ export function Session() {
   const command = useCommandDialog()
   command.register(() => [
     {
-      title: "Share session",
+      title: "分享会话",
       value: "session.share",
       suggested: route.type === "session",
       keybind: "session_share",
@@ -330,16 +330,16 @@ export function Session() {
           })
           .then((res) =>
             Clipboard.copy(res.data!.share!.url).catch(() =>
-              toast.show({ message: "Failed to copy URL to clipboard", variant: "error" }),
+              toast.show({ message: "复制链接到剪贴板失败", variant: "error" }),
             ),
           )
-          .then(() => toast.show({ message: "Share URL copied to clipboard!", variant: "success" }))
-          .catch(() => toast.show({ message: "Failed to share session", variant: "error" }))
+          .then(() => toast.show({ message: "分享链接已复制到剪贴板!", variant: "success" }))
+          .catch(() => toast.show({ message: "分享会话失败", variant: "error" }))
         dialog.clear()
       },
     },
     {
-      title: "Rename session",
+      title: "重命名会话",
       value: "session.rename",
       keybind: "session_rename",
       category: "Session",
@@ -351,7 +351,7 @@ export function Session() {
       },
     },
     {
-      title: "Jump to message",
+      title: "跳转到消息",
       value: "session.timeline",
       keybind: "session_timeline",
       category: "Session",
@@ -374,7 +374,7 @@ export function Session() {
       },
     },
     {
-      title: "Fork from message",
+      title: "从消息分叉",
       value: "session.fork",
       keybind: "session_fork",
       category: "Session",
@@ -396,7 +396,7 @@ export function Session() {
       },
     },
     {
-      title: "Compact session",
+      title: "精简会话",
       value: "session.compact",
       keybind: "session_compact",
       category: "Session",
@@ -409,7 +409,7 @@ export function Session() {
         if (!selectedModel) {
           toast.show({
             variant: "warning",
-            message: "Connect a provider to summarize this session",
+            message: "连接提供商以总结此会话",
             duration: 3000,
           })
           return
@@ -423,7 +423,7 @@ export function Session() {
       },
     },
     {
-      title: "Unshare session",
+      title: "取消分享会话",
       value: "session.unshare",
       keybind: "session_unshare",
       category: "Session",
@@ -436,13 +436,13 @@ export function Session() {
           .unshare({
             sessionID: route.sessionID,
           })
-          .then(() => toast.show({ message: "Session unshared successfully", variant: "success" }))
-          .catch(() => toast.show({ message: "Failed to unshare session", variant: "error" }))
+          .then(() => toast.show({ message: "会话取消分享成功", variant: "success" }))
+          .catch(() => toast.show({ message: "取消分享会话失败", variant: "error" }))
         dialog.clear()
       },
     },
     {
-      title: "Undo previous message",
+      title: "撤销上一条消息",
       value: "session.undo",
       keybind: "messages_undo",
       category: "Session",
@@ -480,7 +480,7 @@ export function Session() {
       },
     },
     {
-      title: "Redo",
+      title: "重做",
       value: "session.redo",
       keybind: "messages_redo",
       category: "Session",
@@ -507,7 +507,7 @@ export function Session() {
       },
     },
     {
-      title: sidebarVisible() ? "Hide sidebar" : "Show sidebar",
+      title: sidebarVisible() ? "隐藏侧边栏" : "显示侧边栏",
       value: "session.sidebar.toggle",
       keybind: "sidebar_toggle",
       category: "Session",
@@ -521,7 +521,7 @@ export function Session() {
       },
     },
     {
-      title: conceal() ? "Disable code concealment" : "Enable code concealment",
+      title: conceal() ? "禁用代码隐藏" : "启用代码隐藏",
       value: "session.toggle.conceal",
       keybind: "messages_toggle_conceal" as any,
       category: "Session",
@@ -531,7 +531,7 @@ export function Session() {
       },
     },
     {
-      title: showTimestamps() ? "Hide timestamps" : "Show timestamps",
+      title: showTimestamps() ? "隐藏时间戳" : "显示时间戳",
       value: "session.toggle.timestamps",
       category: "Session",
       slash: {
@@ -544,7 +544,7 @@ export function Session() {
       },
     },
     {
-      title: showThinking() ? "Hide thinking" : "Show thinking",
+      title: showThinking() ? "隐藏思考过程" : "显示思考过程",
       value: "session.toggle.thinking",
       keybind: "display_thinking",
       category: "Session",
@@ -558,7 +558,7 @@ export function Session() {
       },
     },
     {
-      title: showDetails() ? "Hide tool details" : "Show tool details",
+      title: showDetails() ? "隐藏工具详情" : "显示工具详情",
       value: "session.toggle.actions",
       keybind: "tool_details",
       category: "Session",
@@ -568,7 +568,7 @@ export function Session() {
       },
     },
     {
-      title: "Toggle session scrollbar",
+      title: "切换会话滚动条",
       value: "session.toggle.scrollbar",
       keybind: "scrollbar_toggle",
       category: "Session",
@@ -578,7 +578,7 @@ export function Session() {
       },
     },
     {
-      title: "Page up",
+      title: "向上翻页",
       value: "session.page.up",
       keybind: "messages_page_up",
       category: "Session",
@@ -589,7 +589,7 @@ export function Session() {
       },
     },
     {
-      title: "Page down",
+      title: "向下翻页",
       value: "session.page.down",
       keybind: "messages_page_down",
       category: "Session",
@@ -600,7 +600,7 @@ export function Session() {
       },
     },
     {
-      title: "Line up",
+      title: "向上滚动",
       value: "session.line.up",
       keybind: "messages_line_up",
       category: "Session",
@@ -611,7 +611,7 @@ export function Session() {
       },
     },
     {
-      title: "Line down",
+      title: "向下滚动",
       value: "session.line.down",
       keybind: "messages_line_down",
       category: "Session",
@@ -622,7 +622,7 @@ export function Session() {
       },
     },
     {
-      title: "Half page up",
+      title: "向上半页",
       value: "session.half.page.up",
       keybind: "messages_half_page_up",
       category: "Session",
@@ -633,7 +633,7 @@ export function Session() {
       },
     },
     {
-      title: "Half page down",
+      title: "向下半页",
       value: "session.half.page.down",
       keybind: "messages_half_page_down",
       category: "Session",
@@ -644,7 +644,7 @@ export function Session() {
       },
     },
     {
-      title: "First message",
+      title: "第一条消息",
       value: "session.first",
       keybind: "messages_first",
       category: "Session",
@@ -655,7 +655,7 @@ export function Session() {
       },
     },
     {
-      title: "Last message",
+      title: "最后一条消息",
       value: "session.last",
       keybind: "messages_last",
       category: "Session",
@@ -666,7 +666,7 @@ export function Session() {
       },
     },
     {
-      title: "Jump to last user message",
+      title: "跳转到最后一条用户消息",
       value: "session.messages_last_user",
       keybind: "messages_last_user",
       category: "Session",
@@ -698,7 +698,7 @@ export function Session() {
       },
     },
     {
-      title: "Next message",
+      title: "下一条消息",
       value: "session.message.next",
       keybind: "messages_next",
       category: "Session",
@@ -706,7 +706,7 @@ export function Session() {
       onSelect: (dialog) => scrollToMessage("next", dialog),
     },
     {
-      title: "Previous message",
+      title: "上一条消息",
       value: "session.message.previous",
       keybind: "messages_previous",
       category: "Session",
@@ -714,7 +714,7 @@ export function Session() {
       onSelect: (dialog) => scrollToMessage("prev", dialog),
     },
     {
-      title: "Copy last assistant message",
+      title: "复制最后一条助手消息",
       value: "messages.copy",
       keybind: "messages_copy",
       category: "Session",
@@ -724,7 +724,7 @@ export function Session() {
           (msg) => msg.role === "assistant" && (!revertID || msg.id < revertID),
         )
         if (!lastAssistantMessage) {
-          toast.show({ message: "No assistant messages found", variant: "error" })
+          toast.show({ message: "未找到助手消息", variant: "error" })
           dialog.clear()
           return
         }
@@ -732,7 +732,7 @@ export function Session() {
         const parts = sync.data.part[lastAssistantMessage.id] ?? []
         const textParts = parts.filter((part) => part.type === "text")
         if (textParts.length === 0) {
-          toast.show({ message: "No text parts found in last assistant message", variant: "error" })
+          toast.show({ message: "最后一条助手消息中未找到文本部分", variant: "error" })
           dialog.clear()
           return
         }
@@ -743,7 +743,7 @@ export function Session() {
           .trim()
         if (!text) {
           toast.show({
-            message: "No text content found in last assistant message",
+            message: "最后一条助手消息中未找到文本内容",
             variant: "error",
           })
           dialog.clear()
@@ -751,13 +751,13 @@ export function Session() {
         }
 
         Clipboard.copy(text)
-          .then(() => toast.show({ message: "Message copied to clipboard!", variant: "success" }))
-          .catch(() => toast.show({ message: "Failed to copy to clipboard", variant: "error" }))
+          .then(() => toast.show({ message: "消息已复制到剪贴板!", variant: "success" }))
+          .catch(() => toast.show({ message: "复制到剪贴板失败", variant: "error" }))
         dialog.clear()
       },
     },
     {
-      title: "Copy session transcript",
+      title: "复制会话记录",
       value: "session.copy",
       category: "Session",
       slash: {
@@ -778,15 +778,15 @@ export function Session() {
             },
           )
           await Clipboard.copy(transcript)
-          toast.show({ message: "Session transcript copied to clipboard!", variant: "success" })
+          toast.show({ message: "会话记录已复制到剪贴板!", variant: "success" })
         } catch (error) {
-          toast.show({ message: "Failed to copy session transcript", variant: "error" })
+          toast.show({ message: "复制会话记录失败", variant: "error" })
         }
         dialog.clear()
       },
     },
     {
-      title: "Export session transcript",
+      title: "导出会话记录",
       value: "session.export",
       keybind: "session_export",
       category: "Session",
@@ -838,16 +838,16 @@ export function Session() {
               await Bun.write(filepath, result)
             }
 
-            toast.show({ message: `Session exported to ${filename}`, variant: "success" })
+            toast.show({ message: `会话已导出到 ${filename}`, variant: "success" })
           }
         } catch (error) {
-          toast.show({ message: "Failed to export session", variant: "error" })
+          toast.show({ message: "导出会话失败", variant: "error" })
         }
         dialog.clear()
       },
     },
     {
-      title: "Next child session",
+      title: "下一个子会话",
       value: "session.child.next",
       keybind: "session_child_cycle",
       category: "Session",
@@ -858,7 +858,7 @@ export function Session() {
       },
     },
     {
-      title: "Previous child session",
+      title: "上一个子会话",
       value: "session.child.previous",
       keybind: "session_child_cycle_reverse",
       category: "Session",
@@ -869,7 +869,7 @@ export function Session() {
       },
     },
     {
-      title: "Go to parent session",
+      title: "转到父会话",
       value: "session.parent",
       keybind: "session_parent",
       category: "Session",
@@ -989,11 +989,7 @@ export function Session() {
                         const dialog = useDialog()
 
                         const handleUnrevert = async () => {
-                          const confirmed = await DialogConfirm.show(
-                            dialog,
-                            "Confirm Redo",
-                            "Are you sure you want to restore the reverted messages?",
-                          )
+                          const confirmed = await DialogConfirm.show(dialog, "确认重做", "确定要恢复已撤销的消息吗？")
                           if (confirmed) {
                             command.trigger("session.redo")
                           }
@@ -1718,7 +1714,7 @@ function Write(props: ToolProps<typeof WriteTool>) {
             <For each={diagnostics()}>
               {(diagnostic) => (
                 <text fg={theme.error}>
-                  Error [{diagnostic.range.start.line}:{diagnostic.range.start.character}]: {diagnostic.message}
+                  错误 [{diagnostic.range.start.line}:{diagnostic.range.start.character}]: {diagnostic.message}
                 </text>
               )}
             </For>
@@ -1774,7 +1770,7 @@ function Read(props: ToolProps<typeof ReadTool>) {
 
 function Grep(props: ToolProps<typeof GrepTool>) {
   return (
-    <InlineTool icon="✱" pending="Searching content..." complete={props.input.pattern} part={props.part}>
+    <InlineTool icon="✱" pending="搜索内容..." complete={props.input.pattern} part={props.part}>
       Grep "{props.input.pattern}" <Show when={props.input.path}>in {normalizePath(props.input.path)} </Show>
       <Show when={props.metadata.matches}>
         ({props.metadata.matches} {props.metadata.matches === 1 ? "match" : "matches"})
@@ -1809,7 +1805,7 @@ function CodeSearch(props: ToolProps<any>) {
   const input = props.input as any
   const metadata = props.metadata as any
   return (
-    <InlineTool icon="◇" pending="Searching code..." complete={input.query} part={props.part}>
+    <InlineTool icon="◇" pending="搜索代码..." complete={input.query} part={props.part}>
       Exa Code Search "{input.query}" <Show when={metadata.results}>({metadata.results} results)</Show>
     </InlineTool>
   )
@@ -1819,7 +1815,7 @@ function WebSearch(props: ToolProps<any>) {
   const input = props.input as any
   const metadata = props.metadata as any
   return (
-    <InlineTool icon="◈" pending="Searching web..." complete={input.query} part={props.part}>
+    <InlineTool icon="◈" pending="搜索网页..." complete={input.query} part={props.part}>
       Exa Web Search "{input.query}" <Show when={metadata.numResults}>({metadata.numResults} results)</Show>
     </InlineTool>
   )
@@ -1942,8 +1938,7 @@ function Edit(props: ToolProps<typeof EditTool>) {
               <For each={diagnostics()}>
                 {(diagnostic) => (
                   <text fg={theme.error}>
-                    Error [{diagnostic.range.start.line + 1}:{diagnostic.range.start.character + 1}]{" "}
-                    {diagnostic.message}
+                    错误 [{diagnostic.range.start.line + 1}:{diagnostic.range.start.character + 1}] {diagnostic.message}
                   </text>
                 )}
               </For>
@@ -2091,7 +2086,7 @@ function Question(props: ToolProps<typeof QuestionTool>) {
 
 function Skill(props: ToolProps<typeof SkillTool>) {
   return (
-    <InlineTool icon="→" pending="Loading skill..." complete={props.input.name} part={props.part}>
+    <InlineTool icon="→" pending="加载技能..." complete={props.input.name} part={props.part}>
       Skill "{props.input.name}"
     </InlineTool>
   )

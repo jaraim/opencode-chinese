@@ -249,7 +249,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
                 input.focus()
               }, 1)
             }}
-            placeholder={props.placeholder ?? "Search"}
+            placeholder={props.placeholder ?? "搜索"}
           />
         </box>
       </box>
@@ -257,7 +257,7 @@ export function DialogSelect<T>(props: DialogSelectProps<T>) {
         when={grouped().length > 0}
         fallback={
           <box paddingLeft={4} paddingRight={4} paddingTop={1}>
-            <text fg={theme.textMuted}>No results found</text>
+            <text fg={theme.textMuted}>未找到结果</text>
           </box>
         }
       >

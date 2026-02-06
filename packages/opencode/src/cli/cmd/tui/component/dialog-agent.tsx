@@ -12,14 +12,14 @@ export function DialogAgent() {
       return {
         value: item.name,
         title: item.name,
-        description: item.native ? "native" : item.description,
+        description: item.native ? `${item.description}(内置)` : item.description,
       }
     }),
   )
 
   return (
     <DialogSelect
-      title="Select agent"
+      title="选择智能体"
       current={local.agent.current().name}
       options={options()}
       onSelect={(option) => {

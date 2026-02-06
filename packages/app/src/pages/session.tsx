@@ -977,6 +977,7 @@ export default function Page() {
     {
       id: "session.new",
       title: language.t("command.session.new"),
+      description: language.t("command.session.new.description"),
       category: language.t("command.category.session"),
       keybind: "mod+shift+s",
       slash: "new",
@@ -1037,7 +1038,7 @@ export default function Page() {
     {
       id: "terminal.toggle",
       title: language.t("command.terminal.toggle"),
-      description: "",
+      description: language.t("command.terminal.toggle.description"),
       category: language.t("command.category.view"),
       keybind: "ctrl+`",
       slash: "terminal",

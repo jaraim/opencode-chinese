@@ -37,12 +37,12 @@ export function createDialogProviderOptions() {
           title: provider.name,
           value: provider.id,
           description: {
-            opencode: "(Recommended)",
+            opencode: "（推荐）",
             anthropic: "(Claude Max or API key)",
             openai: "(ChatGPT Plus/Pro or API key)",
           }[provider.id],
           category: provider.id in PROVIDER_PRIORITY ? "Popular" : "Other",
-          footer: isConnected ? "Connected" : undefined,
+          footer: isConnected ? "已连接" : undefined,
           async onSelect() {
             const methods = sync.data.provider_auth[provider.id] ?? [
               {
@@ -56,7 +56,7 @@ export function createDialogProviderOptions() {
                 dialog.replace(
                   () => (
                     <DialogSelect
-                      title="Select auth method"
+                      title="选择认证方式"
                       options={methods.map((x, index) => ({
                         title: x.label,
                         value: index,
@@ -109,7 +109,7 @@ export function createDialogProviderOptions() {
 
 export function DialogProvider() {
   const options = createDialogProviderOptions()
-  return <DialogSelect title="Connect a provider" options={options()} />
+  return <DialogSelect title="连接提供商" options={options()} />
 }
 
 interface AutoMethodProps {
@@ -129,7 +129,7 @@ function AutoMethod(props: AutoMethodProps) {
     if (evt.name === "c" && !evt.ctrl && !evt.meta) {
       const code = props.authorization.instructions.match(/[A-Z0-9]{4}-[A-Z0-9]{4,5}/)?.[0] ?? props.authorization.url
       Clipboard.copy(code)
-        .then(() => toast.show({ message: "Copied to clipboard", variant: "info" }))
+        .then(() => toast.show({ message: "已复制到剪贴板", variant: "info" }))
         .catch(toast.error)
     }
   })
@@ -186,7 +186,7 @@ function CodeMethod(props: CodeMethodProps) {
   return (
     <DialogPrompt
       title={props.title}
-      placeholder="Authorization code"
+      placeholder="授权码"
       onConfirm={async (value) => {
         const { error } = await sdk.client.provider.oauth.callback({
           providerID: props.providerID,
@@ -206,7 +206,7 @@ function CodeMethod(props: CodeMethodProps) {
           <text fg={theme.textMuted}>{props.authorization.instructions}</text>
           <Link href={props.authorization.url} fg={theme.primary} />
           <Show when={error()}>
-            <text fg={theme.error}>Invalid code</text>
+            <text fg={theme.error}>无效的代码</text>
           </Show>
         </box>
       )}
@@ -227,13 +227,11 @@ function ApiMethod(props: ApiMethodProps) {
   return (
     <DialogPrompt
       title={props.title}
-      placeholder="API key"
+      placeholder="API 密钥"
       description={
         props.providerID === "opencode" ? (
           <box gap={1}>
-            <text fg={theme.textMuted}>
-              OpenCode Zen gives you access to all the best coding models at the cheapest prices with a single API key.
-            </text>
+            <text fg={theme.textMuted}>OpenCode Zen 让您使用单个 API 密钥以最低价格访问所有最佳编程模型。</text>
             <text fg={theme.text}>
               Go to <span style={{ fg: theme.primary }}>https://opencode.ai/zen</span> to get a key
             </text>

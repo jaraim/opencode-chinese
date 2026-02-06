@@ -102,7 +102,7 @@ export function DialogExportOptions(props: DialogExportOptionsProps) {
           keyBindings={[{ name: "return", action: "submit" }]}
           ref={(val: TextareaRenderable) => (textarea = val)}
           initialValue={props.defaultFilename}
-          placeholder="Enter filename"
+          placeholder="输入文件名"
           textColor={theme.text}
           focusedTextColor={theme.text}
           cursorColor={theme.text}
