@@ -1,0 +1,29 @@
+name: Sync Zed Extension
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'extensions/zed/**'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Bun
+        uses: ./.github/actions/setup-bun
+
+      - name: Build Zed Extension
+        run: |
+          cd extensions/zed
+          bun install
+          bun run build
+
+      - name: Publish to Zed Extensions
+        env:
+          ZED_EXTENSION_TOKEN: ${{ secrets.ZED_EXTENSION_TOKEN }}
+        run: |
+          echo "Syncing Zed extension..."
