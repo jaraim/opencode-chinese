@@ -1,0 +1,24 @@
+name: Publish GitHub Action
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish-action:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update major version tag
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          MAJOR=$(echo $VERSION | cut -d. -f1)
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag -fa $MAJOR -m "Update major version tag"
+          git push origin $MAJOR --force || true
