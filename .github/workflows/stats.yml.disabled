@@ -1,0 +1,21 @@
+name: Stats
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  generate-stats:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate Repository Stats
+        uses: github/contributors@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
