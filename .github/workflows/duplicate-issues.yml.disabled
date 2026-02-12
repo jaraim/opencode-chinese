@@ -1,0 +1,17 @@
+name: duplicate-issues
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled]
+  pull_request:
+    types: [opened, edited, labeled, unlabeled]
+
+jobs:
+  check-duplicates:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check for duplicates
+      uses: ./.github/actions/check-duplicates
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        max-days: 30
