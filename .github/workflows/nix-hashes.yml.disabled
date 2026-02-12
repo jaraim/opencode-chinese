@@ -1,0 +1,44 @@
+name: Update Nix Hashes
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-nix-hashes:
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Update Cargo hash
+        run: |
+          cd nix/crate2nix
+          nix-prefetch-git https://github.com/opencode-ai/opencode > source-info.json
+          cat source-info.json | jq '.sha256' -r > cargo-hash.txt
+
+      - name: Update Bun dependencies hash
+        run: |
+          cd nix/crate2nix
+          nix-prefetch-url --unpack https://registry.npmjs.org/@anthropic-ai/sdk/-/sdk-0.24.3.tgz > bun-hash.txt || true
+          
+      - name: Commit changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add nix/crate2nix/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update Nix hashes [skip ci]"
+            git push
+          fi
