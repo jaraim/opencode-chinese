@@ -1,0 +1,23 @@
+name: Notify Discord
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Message to send'
+        required: true
+        default: 'Test notification'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{"content": "${{ github.event.inputs.message || github.event.release.tag_name }} released!"}' \
+               $DISCORD_WEBHOOK
