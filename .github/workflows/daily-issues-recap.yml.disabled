@@ -1,0 +1,17 @@
+name: daily-issues-recap
+on:
+  schedule:
+    - cron: '0 9 * * *'  # 每天早上9点
+  workflow_dispatch:
+
+jobs:
+  recap:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Generate issues recap
+      uses: peter-evans/create-issue-from-file@v4
+      with:
+        title: Daily Issues Recap - ${{ github.event.schedule }}
+        content-path: ./issues-recap.md
+        labels: recap,daily
