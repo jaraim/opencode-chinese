@@ -22,7 +22,6 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       # 2. 设置 Bun 环境
       - name: Setup Bun
@@ -30,7 +29,7 @@ jobs:
         with:
           bun-version: latest
 
-      # 3. 缓存依赖（加速构建）
+      # 3. 缓存依赖
       - name: Cache Bun dependencies
         uses: actions/cache@v4
         with:
@@ -42,76 +41,92 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
 
-      # 4. 安装依赖（修复：不使用 --ignore-scripts，确保所有包正确安装）
+      # 4. 安装依赖
       - name: Install dependencies
-        run: |
-          bun install
-          # 检查工作空间包是否正确链接
-          bun pm ls
+        run: bun install
 
-      # 5. 检查工作空间结构（调试步骤）
-      - name: Check workspace structure
-        run: |
-          echo "=== Root package.json ==="
-          cat package.json
-          echo "=== Turbo config ==="
-          cat turbo.json || echo "No turbo.json found"
-          echo "=== Packages directory ==="
-          ls -la packages/ || echo "No packages directory"
-          echo "=== Node modules ==="
-          ls -la node_modules/ | head -20
-
-      # 6. 构建 CLI（修复：先构建依赖包，再构建 CLI）
+      # 5. 构建 CLI
       - name: Build CLI
         run: |
-          # 设置环境变量避免内存溢出
           export NODE_OPTIONS="--max-old-space-size=8192"
-          
-          # 先尝试安装缺失的 sdk 包（如果是本地包，确保链接正确）
-          if [ -d "packages/sdk" ]; then
-            echo "Found local SDK package, linking..."
-            cd packages/sdk && bun link && cd ../..
-          fi
-          
-          # 使用 Turbo 构建，但先尝试直接构建 CLI 包
           cd packages/opencode
-          
-          # 先构建依赖
-          bun run build:deps || echo "No build:deps script"
-          
-          # 构建 CLI（单文件模式）
           bun run build --single
-          
-          # 检查构建输出
-          ls -la dist/ || echo "No dist directory found"
 
-      # 7. 上传构建产物
-      - name: Upload CLI artifacts
+      # 6. 打包成 zip
+      - name: Package artifact
+        run: |
+          cd packages/opencode/dist
+          zip -r ../../../opencode-cli-linux.zip .
+          cd ../../..
+          
+          # 显示打包内容
+          echo "📦 打包内容："
+          unzip -l opencode-cli-linux.zip
+
+      # 7. 上传到 Artifacts（保留）
+      - name: Upload to Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: opencode-cli-${{ runner.os }}
-          path: |
-            packages/opencode/dist/
-            !packages/opencode/dist/**/*.map
+          name: opencode-cli-Linux
+          path: opencode-cli-linux.zip
           retention-days: 7
-          if-no-files-found: warn
 
-      # 8. 创建 Release（仅在打标签时）
-      - name: Create Release
-        if: startsWith(github.ref, 'refs/tags/v')
+      # 8. 推送到 Releases（每次 push 到 main 都创建/更新预发布版本）
+      - name: Create/Update Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            packages/opencode/dist/opencode-*
+          tag_name: nightly
+          name: "Nightly Build"
+          body: |
+            🌙 OpenCode CLI 自动构建版本
+            
+            - 构建时间: ${{ github.event.head_commit.timestamp }}
+            - 提交: ${{ github.sha }}
+            - 分支: ${{ github.ref_name }}
+            
+            ### 安装方法
+            ```bash
+            # 下载并解压
+            curl -fsSL -o opencode-cli.zip "https://github.com/${{ github.repository }}/releases/download/nightly/opencode-cli-linux.zip"
+            unzip opencode-cli.zip
+            chmod +x opencode
+            sudo mv opencode /usr/local/bin/
+            ```
+          files: opencode-cli-linux.zip
+          prerelease: true
           draft: false
-          prerelease: false
-          generate_release_notes: true
+          make_latest: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 9. 清理
-      - name: Post build cleanup
+      # 9. 如果是 tag 推送，创建正式 Release
+      - name: Create Stable Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "OpenCode CLI ${{ github.ref_name }}"
+          body: |
+            🎉 OpenCode CLI 正式版本 ${{ github.ref_name }}
+            
+            ### 更新内容
+            ${{ github.event.head_commit.message }}
+            
+            ### 安装方法
+            ```bash
+            curl -fsSL -o opencode-cli.zip "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/opencode-cli-linux.zip"
+            unzip opencode-cli.zip
+            chmod +x opencode
+            sudo mv opencode /usr/local/bin/
+            ```
+          files: opencode-cli-linux.zip
+          prerelease: false
+          draft: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 10. 清理
+      - name: Cleanup
         if: always()
-        run: |
-          rm -rf packages/opencode/dist/tmp || true
-          bun pm cache rm || true
+        run: rm -f opencode-cli-linux.zip
