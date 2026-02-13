@@ -1,45 +1,117 @@
-name: Build OpenCode CLI
+name: Build CLI
 
 on:
   push:
-    branches: [main]
+    branches: [ main, dev ]
+    tags: [ 'v*' ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
+env:
+  NODE_OPTIONS: "--max-old-space-size=8192"
+
 jobs:
-  build:
+  build-cli:
     runs-on: ubuntu-latest
+    
     steps:
+      # 1. 检出代码（包含子模块）
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
 
+      # 2. 设置 Bun 环境
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
+      # 3. 缓存依赖（加速构建）
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+            **/node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb', '**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      # 4. 安装依赖（修复：不使用 --ignore-scripts，确保所有包正确安装）
       - name: Install dependencies
-        run: bun install --ignore-scripts
-
-      - name: Build CLI only
         run: |
+          bun install
+          # 检查工作空间包是否正确链接
+          bun pm ls
+
+      # 5. 检查工作空间结构（调试步骤）
+      - name: Check workspace structure
+        run: |
+          echo "=== Root package.json ==="
+          cat package.json
+          echo "=== Turbo config ==="
+          cat turbo.json || echo "No turbo.json found"
+          echo "=== Packages directory ==="
+          ls -la packages/ || echo "No packages directory"
+          echo "=== Node modules ==="
+          ls -la node_modules/ | head -20
+
+      # 6. 构建 CLI（修复：先构建依赖包，再构建 CLI）
+      - name: Build CLI
+        run: |
+          # 设置环境变量避免内存溢出
           export NODE_OPTIONS="--max-old-space-size=8192"
-          # 只构建 opencode-cli 相关的包，跳过有问题的 console-app
-          bun run turbo run build --filter=opencode-ai/sdk --filter=opencode-ai/script --filter=opencode-ai/app
-
-      - name: Find and upload CLI artifacts
-        run: |
-          find . -type f -executable -name "opencode*" > cli-files.txt
-          if [ -s cli-files.txt ]; then
-            mkdir -p artifacts
-            cat cli-files.txt | xargs -I {} cp {} artifacts/
+          
+          # 先尝试安装缺失的 sdk 包（如果是本地包，确保链接正确）
+          if [ -d "packages/sdk" ]; then
+            echo "Found local SDK package, linking..."
+            cd packages/sdk && bun link && cd ../..
           fi
+          
+          # 使用 Turbo 构建，但先尝试直接构建 CLI 包
+          cd packages/opencode
+          
+          # 先构建依赖
+          bun run build:deps || echo "No build:deps script"
+          
+          # 构建 CLI（单文件模式）
+          bun run build --single
+          
+          # 检查构建输出
+          ls -la dist/ || echo "No dist directory found"
 
-      - name: Upload artifacts
+      # 7. 上传构建产物
+      - name: Upload CLI artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: opencode-cli-ubuntu
-          path: artifacts/
+          name: opencode-cli-${{ runner.os }}
+          path: |
+            packages/opencode/dist/
+            !packages/opencode/dist/**/*.map
+          retention-days: 7
+          if-no-files-found: warn
+
+      # 8. 创建 Release（仅在打标签时）
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            packages/opencode/dist/opencode-*
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 9. 清理
+      - name: Post build cleanup
+        if: always()
+        run: |
+          rm -rf packages/opencode/dist/tmp || true
+          bun pm cache rm || true
