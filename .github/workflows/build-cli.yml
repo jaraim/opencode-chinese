@@ -24,13 +24,16 @@ jobs:
       - name: Install dependencies
         run: bun install --ignore-scripts
 
-      - name: Build CLI with Turborepo
+      - name: List available packages
+        run: bun run turbo run --list
+
+      - name: Build all packages
         run: |
           export NODE_OPTIONS="--max-old-space-size=8192"
-          bun run turbo run build --filter=opencode-cli
+          bun run turbo run build
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: opencode-cli-ubuntu
-          path: packages/opencode-cli/dist/
+          name: opencode-all-ubuntu
+          path: dist/
