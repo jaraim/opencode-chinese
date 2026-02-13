@@ -5,7 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   build:
@@ -14,30 +14,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 拉取完整历史，方便 Turborepo 缓存
+          fetch-depth: 0
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install Turborepo
-        run: bun install -g turbo
-
       - name: Install dependencies
         run: bun install --ignore-scripts
 
       - name: Build CLI with Turborepo
         run: |
-          # 增加 Node.js 内存限制到 8GB
           export NODE_OPTIONS="--max-old-space-size=8192"
-          # 用 Turborepo 构建 opencode-cli 包
           bun run turbo run build --filter=opencode-cli
 
       - name: Upload artifacts
