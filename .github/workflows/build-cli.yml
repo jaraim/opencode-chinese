@@ -24,16 +24,25 @@ jobs:
       - name: Install dependencies
         run: bun install --ignore-scripts
 
-      - name: List available packages
-        run: bun run turbo run --list
-
       - name: Build all packages
         run: |
           export NODE_OPTIONS="--max-old-space-size=8192"
           bun run turbo run build
 
+      - name: Find and upload CLI artifacts
+        run: |
+          # 查找所有可执行文件
+          find . -type f -executable -name "opencode*" > cli-files.txt
+          # 上传找到的文件
+          if [ -s cli-files.txt ]; then
+            cat cli-files.txt | xargs -I {} sh -c '
+              mkdir -p artifacts
+              cp {} artifacts/
+            '
+          fi
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: opencode-all-ubuntu
-          path: dist/
+          name: opencode-cli-ubuntu
+          path: artifacts/
