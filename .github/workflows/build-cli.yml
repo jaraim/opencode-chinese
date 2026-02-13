@@ -16,20 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # 1. 检出代码（包含子模块）
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
 
-      # 2. 设置 Bun 环境
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      # 3. 缓存依赖
       - name: Cache Bun dependencies
         uses: actions/cache@v4
         with:
@@ -41,29 +38,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
 
-      # 4. 安装依赖
       - name: Install dependencies
         run: bun install
 
-      # 5. 构建 CLI
       - name: Build CLI
         run: |
           export NODE_OPTIONS="--max-old-space-size=8192"
           cd packages/opencode
           bun run build --single
 
-      # 6. 打包成 zip
       - name: Package artifact
         run: |
           cd packages/opencode/dist
           zip -r ../../../opencode-cli-linux.zip .
           cd ../../..
-          
-          # 显示打包内容
           echo "📦 打包内容："
           unzip -l opencode-cli-linux.zip
 
-      # 7. 上传到 Artifacts（保留）
       - name: Upload to Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -71,12 +62,12 @@ jobs:
           path: opencode-cli-linux.zip
           retention-days: 7
 
-      # 8. 推送到 Releases（每次 push 到 main 都创建/更新预发布版本）
+      # 推送到当前仓库的 Releases
       - name: Create/Update Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly
-          name: "Nightly Build"
+          name: "OpenCode CLI Nightly Build"
           body: |
             🌙 OpenCode CLI 自动构建版本
             
@@ -86,8 +77,7 @@ jobs:
             
             ### 安装方法
             ```bash
-            # 下载并解压
-            curl -fsSL -o opencode-cli.zip "https://github.com/${{ github.repository }}/releases/download/nightly/opencode-cli-linux.zip"
+            curl -fsSL -o opencode-cli.zip "https://github.com/jaraim/opencode-chinese/releases/download/nightly/opencode-cli-linux.zip"
             unzip opencode-cli.zip
             chmod +x opencode
             sudo mv opencode /usr/local/bin/
@@ -99,7 +89,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 9. 如果是 tag 推送，创建正式 Release
       - name: Create Stable Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
@@ -114,7 +103,7 @@ jobs:
             
             ### 安装方法
             ```bash
-            curl -fsSL -o opencode-cli.zip "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/opencode-cli-linux.zip"
+            curl -fsSL -o opencode-cli.zip "https://github.com/jaraim/opencode-chinese/releases/download/${{ github.ref_name }}/opencode-cli-linux.zip"
             unzip opencode-cli.zip
             chmod +x opencode
             sudo mv opencode /usr/local/bin/
@@ -126,7 +115,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 10. 清理
       - name: Cleanup
         if: always()
         run: rm -f opencode-cli-linux.zip
+```
+
+这样就不需要配置任何 Secrets，直接使用 GitHub 自动提供的 `GITHUB_TOKEN` 即可推送到 `jaraim/opencode-chinese/releases`。
