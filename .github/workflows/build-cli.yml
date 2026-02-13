@@ -24,21 +24,18 @@ jobs:
       - name: Install dependencies
         run: bun install --ignore-scripts
 
-      - name: Build all packages
+      - name: Build CLI only
         run: |
           export NODE_OPTIONS="--max-old-space-size=8192"
-          bun run turbo run build
+          # 只构建 opencode-cli 相关的包，跳过有问题的 console-app
+          bun run turbo run build --filter=opencode-ai/sdk --filter=opencode-ai/script --filter=opencode-ai/app
 
       - name: Find and upload CLI artifacts
         run: |
-          # 查找所有可执行文件
           find . -type f -executable -name "opencode*" > cli-files.txt
-          # 上传找到的文件
           if [ -s cli-files.txt ]; then
-            cat cli-files.txt | xargs -I {} sh -c '
-              mkdir -p artifacts
-              cp {} artifacts/
-            '
+            mkdir -p artifacts
+            cat cli-files.txt | xargs -I {} cp {} artifacts/
           fi
 
       - name: Upload artifacts
