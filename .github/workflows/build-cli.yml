@@ -12,10 +12,11 @@ env:
   NODE_OPTIONS: "--max-old-space-size=8192"
 
 jobs:
-  build-cli:
+  # x86_64 构建（原有）
+  build-x64:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # 关键：允许写入 Releases
+      contents: write
     
     steps:
       - name: Checkout repository
@@ -43,28 +44,28 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build CLI
+      - name: Build CLI (x64)
         run: |
           export NODE_OPTIONS="--max-old-space-size=8192"
           cd packages/opencode
           bun run build --single
 
-      - name: Package artifact
+      - name: Package artifact (x64)
         run: |
           cd packages/opencode/dist
-          zip -r ../../../opencode-cli-linux.zip .
+          zip -r ../../../opencode-cli-linux-x64.zip .
           cd ../../..
-          echo "📦 打包内容："
-          unzip -l opencode-cli-linux.zip
+          echo "📦 x64 打包内容："
+          unzip -l opencode-cli-linux-x64.zip
 
-      - name: Upload to Artifacts
+      - name: Upload x64 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: opencode-cli-Linux
-          path: opencode-cli-linux.zip
+          name: opencode-cli-linux-x64
+          path: opencode-cli-linux-x64.zip
           retention-days: 7
 
-      - name: Create/Update Release
+      - name: Create/Update Release (x64)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: nightly
@@ -72,23 +73,37 @@ jobs:
           body: |
             🌙 OpenCode CLI 自动构建版本
             
-            - 构建时间: ${{ github.event.head_commit.timestamp }}
-            - 提交: ${{ github.sha }}
-            - 分支: ${{ github.ref_name }}
+            ### 下载
             
-            ### 安装方法
+            | 架构 | 文件 | 适用设备 |
+            |------|------|----------|
+            | x86_64 | `opencode-cli-linux-x64.zip` | 普通电脑/服务器 |
+            | ARM64 | `opencode-cli-linux-arm64.zip` | 手机/ARM服务器 |
+            
+            ### x86_64 安装方法
             ```bash
-            curl -fsSL -o opencode-cli.zip "https://github.com/jaraim/opencode-chinese/releases/download/nightly/opencode-cli-linux.zip"
+            curl -fsSL -o opencode-cli.zip "https://github.com/jaraim/opencode-chinese/releases/download/nightly/opencode-cli-linux-x64.zip"
             unzip opencode-cli.zip
             chmod +x opencode
             sudo mv opencode /usr/local/bin/
             ```
-          files: opencode-cli-linux.zip
+            
+            ### ARM64 安装方法（手机/ARM设备）
+            ```bash
+            curl -fsSL -o opencode-cli.zip "https://github.com/jaraim/opencode-chinese/releases/download/nightly/opencode-cli-linux-arm64.zip"
+            unzip opencode-cli.zip
+            chmod +x opencode
+            mv opencode $PREFIX/bin/  # Termux
+            # 或 sudo mv opencode /usr/local/bin/  # Linux
+            ```
+          files: |
+            opencode-cli-linux-x64.zip
+            opencode-cli-linux-arm64.zip
           prerelease: true
           draft: false
           make_latest: false
 
-      - name: Create Stable Release
+      - name: Create Stable Release (x64)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
@@ -100,18 +115,76 @@ jobs:
             ### 更新内容
             ${{ github.event.head_commit.message }}
             
-            ### 安装方法
-            ```bash
-            curl -fsSL -o opencode-cli.zip "https://github.com/jaraim/opencode-chinese/releases/download/${{ github.ref_name }}/opencode-cli-linux.zip"
-            unzip opencode-cli.zip
-            chmod +x opencode
-            sudo mv opencode /usr/local/bin/
-            ```
-          files: opencode-cli-linux.zip
+            ### 下载
+            - x86_64: `opencode-cli-linux-x64.zip`
+            - ARM64: `opencode-cli-linux-arm64.zip`
+          files: |
+            opencode-cli-linux-x64.zip
+            opencode-cli-linux-arm64.zip
           prerelease: false
           draft: false
           make_latest: true
 
-      - name: Cleanup
+      - name: Cleanup x64
         if: always()
-        run: rm -f opencode-cli-linux.zip
+        run: rm -f opencode-cli-linux-x64.zip
+
+  # ARM64 构建（新增）
+  build-arm64:
+    runs-on: ubuntu-24.04-arm  # GitHub 原生 ARM64 runner
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+            **/node_modules
+          key: ${{ runner.os }}-arm64-bun-${{ hashFiles('**/bun.lockb', '**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-arm64-bun-
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build CLI (ARM64)
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=8192"
+          cd packages/opencode
+          # Bun 自动检测目标平台，在 ARM runner 上构建就是 ARM64
+          bun run build --single
+
+      - name: Package artifact (ARM64)
+        run: |
+          cd packages/opencode/dist
+          zip -r ../../../opencode-cli-linux-arm64.zip .
+          cd ../../..
+          echo "📦 ARM64 打包内容："
+          unzip -l opencode-cli-linux-arm64.zip
+          echo "📋 文件信息："
+          file packages/opencode/dist/opencode || file packages/opencode/dist/bin/opencode || ls -la packages/opencode/dist/
+
+      - name: Upload ARM64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: opencode-cli-linux-arm64
+          path: opencode-cli-linux-arm64.zip
+          retention-days: 7
+
+      - name: Cleanup ARM64
+        if: always()
+        run: rm -f opencode-cli-linux-arm64.zip
